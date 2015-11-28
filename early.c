@@ -56,13 +56,22 @@ early_mounts(void)
 {
 	unsigned int oldumask = umask(0);
 
-	mount("proc", "/proc", "proc", MS_NOATIME | MS_NODEV | MS_NOEXEC | MS_NOSUID, 0);
-	mount("sys", "/sys", "sysfs", MS_NOATIME | MS_NODEV | MS_NOEXEC | MS_NOSUID, 0);
-	mount("cgroup", "/sys/fs/cgroup", "cgroup",  MS_NODEV | MS_NOEXEC | MS_NOSUID, "none");
+	mount("proc", "/proc", "proc", MS_NOATIME | MS_NODEV | MS_NOEXEC | MS_NOSUID, NULL);
+	mount("sys", "/sys", "sysfs", MS_NOATIME | MS_NODEV | MS_NOEXEC | MS_NOSUID, NULL);
+	mount("cgroup", "/sys/fs/cgroup", "cgroup",  MS_NODEV | MS_NOEXEC | MS_NOSUID, NULL);
 	mount("dev", "/dev", "devtmpfs", MS_NOATIME | MS_NOSUID, "mode=0755,size=512K");
+
 	mkdir("/dev/pts", 0755);
 	mount("devpts", "/dev/pts", "devpts", MS_NOATIME | MS_NOEXEC | MS_NOSUID, "mode=600");
-	mount("tmpfs", "/tmp", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOATIME, 0);
+
+	mount("run", "/run", "tmpfs", MS_NOATIME, "mode=0755");
+
+	mkdir("/run/tmp", 01777);
+	mount("/run/tmp", "/tmp", NULL, MS_BIND, NULL);
+
+	mkdir("/run/shm", 01777);
+	mkdir("/dev/shm", 0755);
+	mount("/run/shm", "/dev/shm", NULL, MS_BIND, NULL);
 
 	umask(oldumask);
 }
