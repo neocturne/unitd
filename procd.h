@@ -45,8 +45,7 @@ void procd_preinit(void);
 void procd_coldplug(void);
 void procd_signal(void);
 void procd_signal_preinit(void);
-void procd_inittab(void);
-void procd_inittab_run(const char *action);
+void procd_askconsole(void);
 void procd_bcast_event(char *event, struct blob_attr *msg);
 
 struct trigger;

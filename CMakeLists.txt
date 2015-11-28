@@ -7,7 +7,7 @@ ADD_DEFINITIONS(-Os -ggdb -Wall -Werror --std=gnu99 -Wmissing-declarations)
 SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 
 
-SET(SOURCES procd.c signal.c watchdog.c state.c	inittab.c rcS.c	ubus.c system.c early.c
+SET(SOURCES procd.c signal.c watchdog.c state.c askconsole.c ubus.c system.c early.c
 	service/service.c service/instance.c service/trigger.c service/watch.c
 	utils/utils.c)
 

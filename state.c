@@ -30,10 +30,8 @@
 enum {
 	STATE_NONE = 0,
 	STATE_EARLY,
-	STATE_INIT,
 	STATE_RUNNING,
 	STATE_SHUTDOWN,
-	STATE_HALT,
 	__STATE_MAX,
 };
 
@@ -106,19 +104,13 @@ static void state_enter(void)
 		service_start_early("ubus", ubus_cmd);
 		break;
 
-	case STATE_INIT:
+	case STATE_RUNNING:
 		LOG("- init -\n");
-		procd_inittab();
-		procd_inittab_run("respawn");
-		procd_inittab_run("askconsole");
-		procd_inittab_run("askfirst");
-		procd_inittab_run("sysinit");
+		procd_askconsole();
 
 		// switch to syslog log channel
 		ulog_open(ULOG_SYSLOG, LOG_DAEMON, "procd");
-		break;
 
-	case STATE_RUNNING:
 		LOG("- init complete -\n");
 		break;
 
@@ -126,11 +118,7 @@ static void state_enter(void)
 		/* Redirect output to the console for the users' benefit */
 		set_console();
 		LOG("- shutdown -\n");
-		procd_inittab_run("shutdown");
 		sync();
-		break;
-
-	case STATE_HALT:
 		// To prevent killed processes from interrupting the sleep
 		signal(SIGCHLD, SIG_IGN);
 		LOG("- SIGTERM processes -\n");

@@ -21,8 +21,6 @@
 #include "service.h"
 #include "instance.h"
 
-#include "../rcS.h"
-
 struct avl_tree services;
 static struct blob_buf b;
 static struct ubus_context *ctx;
@@ -131,8 +129,6 @@ service_update(struct service *s, struct blob_attr **tb, bool add)
 		if (!add)
 			vlist_flush(&s->instances);
 	}
-
-	rc(s->name, "running");
 
 	return 0;
 }
