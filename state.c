@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2013 Felix Fietkau <nbd@openwrt.org>
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
+ * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -22,7 +23,6 @@
 
 #include "procd.h"
 #include "syslog.h"
-#include "plug/hotplug.h"
 #include "watchdog.h"
 #include "service/service.h"
 #include "utils/utils.h"
@@ -30,7 +30,6 @@
 enum {
 	STATE_NONE = 0,
 	STATE_EARLY,
-	STATE_UBUS,
 	STATE_INIT,
 	STATE_RUNNING,
 	STATE_SHUTDOWN,
@@ -99,17 +98,9 @@ static void state_enter(void)
 
 	switch (state) {
 	case STATE_EARLY:
+		watchdog_init(0);
 		LOG("- early -\n");
-		watchdog_init(0);
-		hotplug("/etc/hotplug.json");
-		procd_coldplug();
-		break;
-
-	case STATE_UBUS:
-		// try to reopen incase the wdt was not available before coldplug
-		watchdog_init(0);
-		set_stdio("console");
-		LOG("- ubus -\n");
+		procd_early();
 		procd_connect_ubus();
 		service_init();
 		service_start_early("ubus", ubus_cmd);
@@ -185,7 +176,7 @@ void procd_state_next(void)
 
 void procd_state_ubus_connect(void)
 {
-	if (state == STATE_UBUS)
+	if (state == STATE_EARLY)
 		procd_state_next();
 }
 

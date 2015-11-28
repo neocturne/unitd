@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2013 Felix Fietkau <nbd@openwrt.org>
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
+ * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -23,16 +24,14 @@
 
 #include "procd.h"
 #include "watchdog.h"
-#include "plug/hotplug.h"
 
-unsigned int debug;
+unsigned int debug = 4;
 
 static int usage(const char *prog)
 {
 	ERROR("Usage: %s [options]\n"
 		"Options:\n"
 		"\t-s <path>\tPath to ubus socket\n"
-		"\t-h <path>\trun as hotplug daemon\n"
 		"\t-d <level>\tEnable debug messages\n"
 		"\n", prog);
 	return 1;
@@ -41,19 +40,15 @@ static int usage(const char *prog)
 int main(int argc, char **argv)
 {
 	int ch;
-	char *dbglvl = getenv("DBGLVL");
+	if (getpid() != 1) {
+		fprintf(stderr, "error: must run as PID 1\n");
+		return 1;
+	}
 
 	ulog_open(ULOG_KMSG, LOG_DAEMON, "procd");
 
-	if (dbglvl) {
-		debug = atoi(dbglvl);
-		unsetenv("DBGLVL");
-	}
-
-	while ((ch = getopt(argc, argv, "d:s:h:")) != -1) {
+	while ((ch = getopt(argc, argv, "d:s:")) != -1) {
 		switch (ch) {
-		case 'h':
-			return hotplug_run(optarg);
 		case 's':
 			ubus_socket = optarg;
 			break;
@@ -68,10 +63,7 @@ int main(int argc, char **argv)
 	uloop_init();
 	procd_signal();
 	trigger_init();
-	if (getpid() != 1)
-		procd_connect_ubus();
-	else
-		procd_state_next();
+	procd_state_next();
 	uloop_run();
 	uloop_done();
 

@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2013 Felix Fietkau <nbd@openwrt.org>
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
+ * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -27,31 +28,15 @@ struct vrule {
 	char *rule;
 };
 
-struct validate {
-	struct avl_node avl;
-	struct list_head list;
-
-	char *package;
-	char *type;
-
-	struct avl_tree rules;
-};
-
 struct service {
 	struct avl_node avl;
 	const char *name;
 
 	struct blob_attr *trigger;
 	struct vlist_tree instances;
-	struct list_head validators;
 };
 
-void service_validate_add(struct service *s, struct blob_attr *attr);
-void service_validate_dump(struct blob_buf *b, struct service *s);
-void service_validate_dump_all(struct blob_buf *b, char *p, char *s);
 int service_start_early(char *name, char *cmdline);
-void service_validate_del(struct service *s);
-void service_validate_init(void);
 void service_init(void);
 void service_event(const char *type, const char *service, const char *instance);
 
