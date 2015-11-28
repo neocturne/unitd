@@ -51,11 +51,6 @@ struct service_instance {
 	int respawn_count;
 	struct timespec start;
 
-	bool trace;
-	bool has_jail;
-	struct jail jail;
-	char *seccomp;
-
 	uint32_t respawn_timeout;
 	uint32_t respawn_threshold;
 	uint32_t respawn_retry;
@@ -67,7 +62,6 @@ struct service_instance {
 	struct ustream_fd _stderr;
 
 	struct blob_attr *command;
-	struct blob_attr *trigger;
 	struct blobmsg_list env;
 	struct blobmsg_list data;
 	struct blobmsg_list netdev;

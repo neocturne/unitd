@@ -8,10 +8,9 @@ SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 
 
 SET(SOURCES procd.c signal.c watchdog.c state.c askconsole.c ubus.c system.c early.c
-	service/service.c service/instance.c service/trigger.c service/watch.c
-	utils/utils.c)
+	service/service.c service/instance.c utils/utils.c)
 
-SET(LIBS ubox ubus json-c blobmsg_json json_script)
+SET(LIBS ubox ubus json-c blobmsg_json)
 
 IF(DEBUG)
   ADD_DEFINITIONS(-DDEBUG -g3)

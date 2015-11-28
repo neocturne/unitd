@@ -62,7 +62,6 @@ int main(int argc, char **argv)
 	setsid();
 	uloop_init();
 	procd_signal();
-	trigger_init();
 	procd_state_next();
 	uloop_run();
 	uloop_done();

@@ -66,7 +66,6 @@ service_instance_update(struct vlist_tree *tree, struct vlist_node *node_new,
 		instance_start(in_n);
 	}
 	blob_buf_init(&b, 0);
-	trigger_event("instance.update", b.head);
 }
 
 static struct service *
@@ -90,7 +89,6 @@ enum {
 	SERVICE_SET_NAME,
 	SERVICE_SET_SCRIPT,
 	SERVICE_SET_INSTANCES,
-	SERVICE_SET_TRIGGER,
 	__SERVICE_SET_MAX
 };
 
@@ -98,7 +96,6 @@ static const struct blobmsg_policy service_set_attrs[__SERVICE_SET_MAX] = {
 	[SERVICE_SET_NAME] = { "name", BLOBMSG_TYPE_STRING },
 	[SERVICE_SET_SCRIPT] = { "script", BLOBMSG_TYPE_STRING },
 	[SERVICE_SET_INSTANCES] = { "instances", BLOBMSG_TYPE_TABLE },
-	[SERVICE_SET_TRIGGER] = { "triggers", BLOBMSG_TYPE_ARRAY },
 };
 
 static int
@@ -106,19 +103,6 @@ service_update(struct service *s, struct blob_attr **tb, bool add)
 {
 	struct blob_attr *cur;
 	int rem;
-
-	if (s->trigger) {
-		trigger_del(s);
-		free(s->trigger);
-		s->trigger = NULL;
-	}
-
-	if (tb[SERVICE_SET_TRIGGER] && blobmsg_data_len(tb[SERVICE_SET_TRIGGER])) {
-		s->trigger = blob_memdup(tb[SERVICE_SET_TRIGGER]);
-		if (!s->trigger)
-			return -1;
-		trigger_add(s->trigger, s);
-	}
 
 	if (tb[SERVICE_SET_INSTANCES]) {
 		if (!add)
@@ -139,8 +123,6 @@ service_delete(struct service *s)
 	service_event("service.stop", s->name, NULL);
 	vlist_flush_all(&s->instances);
 	avl_delete(&services, &s->avl);
-	trigger_del(s);
-	free(s->trigger);
 	free(s);
 }
 
@@ -253,8 +235,6 @@ service_dump(struct service *s, bool verbose)
 			instance_dump(&b, in, verbose);
 		blobmsg_close_table(&b, i);
 	}
-	if (verbose && s->trigger)
-		blobmsg_add_blob(&b, s->trigger);
 	blobmsg_close_table(&b, c);
 }
 
@@ -351,25 +331,6 @@ service_handle_update(struct ubus_context *ctx, struct ubus_object *obj,
 }
 
 static int
-service_handle_event(struct ubus_context *ctx, struct ubus_object *obj,
-			struct ubus_request_data *req, const char *method,
-			struct blob_attr *msg)
-{
-	struct blob_attr *tb[__EVENT_MAX];
-
-	if (!msg)
-		return UBUS_STATUS_INVALID_ARGUMENT;
-
-	blobmsg_parse(event_policy, __EVENT_MAX, tb, blob_data(msg), blob_len(msg));
-	if (!tb[EVENT_TYPE] || !tb[EVENT_DATA])
-		return UBUS_STATUS_INVALID_ARGUMENT;
-
-	trigger_event(blobmsg_get_string(tb[EVENT_TYPE]), tb[EVENT_DATA]);
-
-	return 0;
-}
-
-static int
 service_get_data(struct ubus_context *ctx, struct ubus_object *obj,
 		 struct ubus_request_data *req, const char *method,
 		 struct blob_attr *msg)
@@ -435,7 +396,6 @@ static struct ubus_method main_object_methods[] = {
 	UBUS_METHOD("delete", service_handle_delete, service_del_attrs),
 	UBUS_METHOD("update_start", service_handle_update, service_attrs),
 	UBUS_METHOD("update_complete", service_handle_update, service_attrs),
-	UBUS_METHOD("event", service_handle_event, event_policy),
 	UBUS_METHOD("get_data", service_get_data, get_data_policy),
 };
 
