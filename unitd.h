@@ -29,7 +29,6 @@
 #define __init __attribute__((constructor))
 
 extern char *ubus_socket;
-extern int upgrade_running;
 
 void unitd_early(void);
 

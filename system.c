@@ -34,15 +34,12 @@ static struct blob_buf b;
 static int notify;
 static struct ubus_context *_ctx;
 
-int upgrade_running = 0;
-
 static int system_board(struct ubus_context *ctx, struct ubus_object *obj,
                  struct ubus_request_data *req, const char *method,
                  struct blob_attr *msg)
 {
-	void *c;
 	char line[256];
-	char *key, *val, *next;
+	char *key, *val;
 	struct utsname utsname;
 	FILE *f;
 
@@ -81,19 +78,6 @@ static int system_board(struct ubus_context *ctx, struct ubus_object *obj,
 		fclose(f);
 	}
 
-	if ((f = fopen("/tmp/sysinfo/model", "r")) != NULL ||
-	    (f = fopen("/proc/device-tree/model", "r")) != NULL)
-	{
-		if (fgets(line, sizeof(line), f))
-		{
-			val = strtok(line, "\t\n");
-
-			if (val)
-				blobmsg_add_string(&b, "model", val);
-		}
-
-		fclose(f);
-	}
 	else if ((f = fopen("/proc/cpuinfo", "r")) != NULL)
 	{
 		while(fgets(line, sizeof(line), f))
@@ -111,71 +95,6 @@ static int system_board(struct ubus_context *ctx, struct ubus_object *obj,
 				break;
 			}
 		}
-
-		fclose(f);
-	}
-
-	if ((f = fopen("/etc/openwrt_release", "r")) != NULL)
-	{
-		c = blobmsg_open_table(&b, "release");
-
-		while (fgets(line, sizeof(line), f))
-		{
-			char *dest;
-			char ch;
-
-			key = line;
-			val = strchr(line, '=');
-			if (!val)
-				continue;
-
-			*(val++) = 0;
-
-			if (!strcasecmp(key, "DISTRIB_ID"))
-				key = "distribution";
-			else if (!strcasecmp(key, "DISTRIB_RELEASE"))
-				key = "version";
-			else if (!strcasecmp(key, "DISTRIB_REVISION"))
-				key = "revision";
-			else if (!strcasecmp(key, "DISTRIB_CODENAME"))
-				key = "codename";
-			else if (!strcasecmp(key, "DISTRIB_TARGET"))
-				key = "target";
-			else if (!strcasecmp(key, "DISTRIB_DESCRIPTION"))
-				key = "description";
-			else
-				continue;
-
-			dest = blobmsg_alloc_string_buffer(&b, key, strlen(val));
-			if (!dest) {
-				ERROR("Failed to allocate blob.\n");
-				continue;
-			}
-
-			while (val && (ch = *(val++)) != 0) {
-				switch (ch) {
-				case '\'':
-				case '"':
-					next = strchr(val, ch);
-					if (next)
-						*next = 0;
-
-					strcpy(dest, val);
-
-					if (next)
-						val = next + 1;
-
-					dest += strlen(dest);
-					break;
-				case '\\':
-					*(dest++) = *(val++);
-					break;
-				}
-			}
-			blobmsg_add_string_buffer(&b);
-		}
-
-		blobmsg_close_array(&b, c);
 
 		fclose(f);
 	}
@@ -228,14 +147,6 @@ static int system_info(struct ubus_context *ctx, struct ubus_object *obj,
 	ubus_send_reply(ctx, req, b.head);
 
 	return UBUS_STATUS_OK;
-}
-
-static int system_upgrade(struct ubus_context *ctx, struct ubus_object *obj,
-			struct ubus_request_data *req, const char *method,
-			struct blob_attr *msg)
-{
-	upgrade_running = 1;
-	return 0;
 }
 
 enum {
@@ -330,49 +241,6 @@ static int proc_signal(struct ubus_context *ctx, struct ubus_object *obj,
 	return 0;
 }
 
-enum {
-	NAND_PATH,
-	__NAND_MAX
-};
-
-static const struct blobmsg_policy nand_policy[__NAND_MAX] = {
-	[NAND_PATH] = { .name = "path", .type = BLOBMSG_TYPE_STRING },
-};
-
-static void
-unitd_spawn_upgraded(char *path)
-{
-	char *wdt_fd = watchdog_fd();
-	char *argv[] = { "/tmp/upgraded", NULL, NULL};
-
-	argv[1] = path;
-
-	DEBUG(2, "Exec to upgraded now\n");
-	if (wdt_fd) {
-		watchdog_no_cloexec();
-		setenv("WDTFD", wdt_fd, 1);
-	}
-	execvp(argv[0], argv);
-}
-
-static int nand_set(struct ubus_context *ctx, struct ubus_object *obj,
-			struct ubus_request_data *req, const char *method,
-			struct blob_attr *msg)
-{
-	struct blob_attr *tb[__NAND_MAX];
-
-	if (!msg)
-		return UBUS_STATUS_INVALID_ARGUMENT;
-
-	blobmsg_parse(nand_policy, __NAND_MAX, tb, blob_data(msg), blob_len(msg));
-	if (!tb[NAND_PATH])
-		return UBUS_STATUS_INVALID_ARGUMENT;
-
-	unitd_spawn_upgraded(blobmsg_get_string(tb[NAND_PATH]));
-	fprintf(stderr, "Yikees, something went wrong. no /sbin/upgraded ?\n");
-	return 0;
-}
-
 static void
 unitd_subscribe_cb(struct ubus_context *ctx, struct ubus_object *obj)
 {
@@ -383,12 +251,8 @@ unitd_subscribe_cb(struct ubus_context *ctx, struct ubus_object *obj)
 static const struct ubus_method system_methods[] = {
 	UBUS_METHOD_NOARG("board", system_board),
 	UBUS_METHOD_NOARG("info",  system_info),
-	UBUS_METHOD_NOARG("upgrade", system_upgrade),
 	UBUS_METHOD("watchdog", watchdog_set, watchdog_policy),
 	UBUS_METHOD("signal", proc_signal, signal_policy),
-
-	/* must remain at the end as it ia not always loaded */
-	UBUS_METHOD("nandupgrade", nand_set, nand_policy),
 };
 
 static struct ubus_object_type system_object_type =
@@ -417,11 +281,7 @@ unitd_bcast_event(char *event, struct blob_attr *msg)
 
 void ubus_init_system(struct ubus_context *ctx)
 {
-	struct stat s;
 	int ret;
-
-	if (stat("/sbin/upgraded", &s))
-		system_object.n_methods -= 1;
 
 	_ctx = ctx;
 	ret = ubus_add_object(ctx, &system_object);
