@@ -1,7 +1,9 @@
 /*
+ * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
+ *
+ * Based on "procd" by:
  * Copyright (C) 2013 Felix Fietkau <nbd@openwrt.org>
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
- * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -25,7 +27,7 @@
 
 #include <libubox/uloop.h>
 
-#include "procd.h"
+#include "unitd.h"
 #include "watchdog.h"
 
 static struct blob_buf b;
@@ -338,7 +340,7 @@ static const struct blobmsg_policy nand_policy[__NAND_MAX] = {
 };
 
 static void
-procd_spawn_upgraded(char *path)
+unitd_spawn_upgraded(char *path)
 {
 	char *wdt_fd = watchdog_fd();
 	char *argv[] = { "/tmp/upgraded", NULL, NULL};
@@ -366,13 +368,13 @@ static int nand_set(struct ubus_context *ctx, struct ubus_object *obj,
 	if (!tb[NAND_PATH])
 		return UBUS_STATUS_INVALID_ARGUMENT;
 
-	procd_spawn_upgraded(blobmsg_get_string(tb[NAND_PATH]));
+	unitd_spawn_upgraded(blobmsg_get_string(tb[NAND_PATH]));
 	fprintf(stderr, "Yikees, something went wrong. no /sbin/upgraded ?\n");
 	return 0;
 }
 
 static void
-procd_subscribe_cb(struct ubus_context *ctx, struct ubus_object *obj)
+unitd_subscribe_cb(struct ubus_context *ctx, struct ubus_object *obj)
 {
 	notify = obj->has_subscribers;
 }
@@ -397,11 +399,11 @@ static struct ubus_object system_object = {
 	.type = &system_object_type,
 	.methods = system_methods,
 	.n_methods = ARRAY_SIZE(system_methods),
-	.subscribe_cb = procd_subscribe_cb,
+	.subscribe_cb = unitd_subscribe_cb,
 };
 
 void
-procd_bcast_event(char *event, struct blob_attr *msg)
+unitd_bcast_event(char *event, struct blob_attr *msg)
 {
 	int ret;
 

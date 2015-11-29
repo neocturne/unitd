@@ -1,29 +1,24 @@
 cmake_minimum_required(VERSION 2.6)
 
-PROJECT(procd C)
-INCLUDE(GNUInstallDirs)
-ADD_DEFINITIONS(-Os -ggdb -Wall -Werror --std=gnu99 -Wmissing-declarations)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
-
-
-SET(SOURCES procd.c signal.c watchdog.c state.c askconsole.c ubus.c system.c early.c
-	service/service.c service/instance.c utils/utils.c)
-
-SET(LIBS ubox ubus json-c blobmsg_json)
-
-IF(DEBUG)
-  ADD_DEFINITIONS(-DDEBUG -g3)
-ENDIF()
-
-ADD_EXECUTABLE(init ${SOURCES})
-TARGET_LINK_LIBRARIES(init ${LIBS})
-INSTALL(TARGETS init
-	RUNTIME DESTINATION ${CMAKE_INSTALL_SBINDIR}
-)
+project(unitd C)
+include(GNUInstallDirs)
 
 
-ADD_EXECUTABLE(askfirst utils/askfirst.c)
-INSTALL(TARGETS askfirst
-	RUNTIME DESTINATION ${CMAKE_INSTALL_SBINDIR}
-)
+find_package(JSON_C REQUIRED)
+
+
+add_executable(init unitd.c signal.c watchdog.c state.c askconsole.c ubus.c system.c early.c
+  service/service.c service/instance.c utils/utils.c)
+set_property(TARGET init PROPERTY COMPILE_FLAGS "${JSON_C_CFLAGS_OTHER}")
+set_property(TARGET init PROPERTY LINK_FLAGS "${JSON_C_LDFLAGS_OTHER}")
+set_property(TARGET init PROPERTY INCLUDE_DIRECTORIES ${JSON_C_INCLUDE_DIR})
+target_link_libraries(init ubox ubus blobmsg_json ${JSON_C_LIBRARIES})
+
+install(TARGETS init RUNTIME DESTINATION ${CMAKE_INSTALL_SBINDIR})
+
+
+add_executable(askfirst utils/askfirst.c)
+
+install(TARGETS askfirst RUNTIME DESTINATION ${CMAKE_INSTALL_SBINDIR})

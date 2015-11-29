@@ -1,7 +1,9 @@
 /*
+ * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
+ *
+ * Based on "procd" by:
  * Copyright (C) 2013 Felix Fietkau <nbd@openwrt.org>
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
- * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -13,8 +15,7 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __PROCD_INSTANCE_H
-#define __PROCD_INSTANCE_H
+#pragma once
 
 #include <libubox/vlist.h>
 #include <libubox/uloop.h>
@@ -76,5 +77,3 @@ bool instance_update(struct service_instance *in, struct service_instance *in_ne
 void instance_init(struct service_instance *in, struct service *s, struct blob_attr *config);
 void instance_free(struct service_instance *in);
 void instance_dump(struct blob_buf *b, struct service_instance *in, int debug);
-
-#endif

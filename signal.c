@@ -1,7 +1,9 @@
 /*
+ * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
+ *
+ * Based on "procd" by:
  * Copyright (C) 2013 Felix Fietkau <nbd@openwrt.org>
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
- * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -18,7 +20,7 @@
 
 #include <unistd.h>
 
-#include "procd.h"
+#include "unitd.h"
 
 static void do_reboot(void)
 {
@@ -51,7 +53,7 @@ static void signal_shutdown(int signal, siginfo_t *siginfo, void *data)
 
 	DEBUG(1, "Triggering %s\n", msg);
 	if (event)
-		procd_shutdown(event);
+		unitd_shutdown(event);
 }
 
 struct sigaction sa_shutdown = {
@@ -61,7 +63,7 @@ struct sigaction sa_shutdown = {
 
 static void signal_crash(int signal, siginfo_t *siginfo, void *data)
 {
-	ERROR("Rebooting as procd has crashed\n");
+	ERROR("Rebooting as unitd has crashed\n");
 	do_reboot();
 }
 
@@ -80,7 +82,7 @@ struct sigaction sa_dummy = {
 	.sa_flags = SA_SIGINFO
 };
 
-void procd_signal(void)
+void unitd_signal(void)
 {
 	signal(SIGPIPE, SIG_IGN);
 	if (getpid() != 1)

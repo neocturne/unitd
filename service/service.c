@@ -1,7 +1,9 @@
 /*
+ * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
+ *
+ * Based on "procd" by:
  * Copyright (C) 2013 Felix Fietkau <nbd@openwrt.org>
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
- * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -16,7 +18,7 @@
 #include <libubox/blobmsg_json.h>
 #include <libubox/avl-cmp.h>
 
-#include "../procd.h"
+#include "../unitd.h"
 
 #include "service.h"
 #include "instance.h"

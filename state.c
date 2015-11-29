@@ -1,7 +1,9 @@
 /*
+ * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
+ *
+ * Based on "procd" by:
  * Copyright (C) 2013 Felix Fietkau <nbd@openwrt.org>
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
- * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -21,7 +23,7 @@
 #include <sys/types.h>
 #include <signal.h>
 
-#include "procd.h"
+#include "unitd.h"
 #include "syslog.h"
 #include "watchdog.h"
 #include "service/service.h"
@@ -98,18 +100,18 @@ static void state_enter(void)
 	case STATE_EARLY:
 		watchdog_init(0);
 		LOG("- early -\n");
-		procd_early();
-		procd_connect_ubus();
+		unitd_early();
+		unitd_connect_ubus();
 		service_init();
 		service_start_early("ubus", ubus_cmd);
 		break;
 
 	case STATE_RUNNING:
 		LOG("- init -\n");
-		procd_askconsole();
+		unitd_askconsole();
 
 		// switch to syslog log channel
-		ulog_open(ULOG_SYSLOG, LOG_DAEMON, "procd");
+		ulog_open(ULOG_SYSLOG, LOG_DAEMON, "unitd");
 
 		LOG("- init complete -\n");
 		break;
@@ -155,20 +157,20 @@ static void state_enter(void)
 	};
 }
 
-void procd_state_next(void)
+void unitd_state_next(void)
 {
 	DEBUG(4, "Change state %d -> %d\n", state, state + 1);
 	state++;
 	state_enter();
 }
 
-void procd_state_ubus_connect(void)
+void unitd_state_ubus_connect(void)
 {
 	if (state == STATE_EARLY)
-		procd_state_next();
+		unitd_state_next();
 }
 
-void procd_shutdown(int event)
+void unitd_shutdown(int event)
 {
 	if (state >= STATE_SHUTDOWN)
 		return;

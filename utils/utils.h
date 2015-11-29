@@ -1,7 +1,9 @@
 /*
+ * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
+ *
+ * Based on "procd" by:
  * Copyright (C) 2013 Felix Fietkau <nbd@openwrt.org>
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
- * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -13,8 +15,7 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __PROCD_UTILS_H
-#define __PROCD_UTILS_H
+#pragma once
 
 #include <libubox/avl.h>
 #include <libubox/blob.h>
@@ -53,5 +54,3 @@ void blobmsg_list_free(struct blobmsg_list *list);
 bool blobmsg_list_equal(struct blobmsg_list *l1, struct blobmsg_list *l2);
 void blobmsg_list_move(struct blobmsg_list *list, struct blobmsg_list *src);
 char* get_cmdline_val(const char* name, char* out, int len);
-
-#endif

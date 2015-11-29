@@ -1,7 +1,9 @@
 /*
+ * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
+ *
+ * Based on "procd" by:
  * Copyright (C) 2013 Felix Fietkau <nbd@openwrt.org>
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
- * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -13,8 +15,7 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __PROCD_WATCHDOG_H
-#define __PROCD_WATCHDOG_H
+#pragma once
 
 void watchdog_init(int preinit);
 char* watchdog_fd(void);
@@ -24,5 +25,3 @@ void watchdog_set_stopped(bool val);
 bool watchdog_get_stopped(void);
 void watchdog_no_cloexec(void);
 void watchdog_ping(void);
-
-#endif

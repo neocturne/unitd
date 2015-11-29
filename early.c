@@ -1,7 +1,9 @@
 /*
+ * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
+ *
+ * Based on "procd" by:
  * Copyright (C) 2013 Felix Fietkau <nbd@openwrt.org>
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
- * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -22,7 +24,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "procd.h"
+#include "unitd.h"
 
 static void
 early_console(const char *dev)
@@ -83,7 +85,7 @@ early_env(void)
 }
 
 void
-procd_early(void)
+unitd_early(void)
 {
 	early_mounts();
 	early_console("/dev/console");

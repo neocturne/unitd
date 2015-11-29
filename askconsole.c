@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -11,7 +10,7 @@
  * GNU General Public License for more details.
  */
 
-#include "procd.h"
+#include "unitd.h"
 
 #include <sys/types.h>
 #include <sys/ioctl.h>
@@ -57,7 +56,7 @@ static void child_exit(struct uloop_process *proc, int ret)
 	askconsole(proc);
 }
 
-void procd_askconsole(void) {
+void unitd_askconsole(void) {
 	struct uloop_process *proc = malloc(sizeof(*proc));
 	proc->cb = child_exit;
 	askconsole(proc);

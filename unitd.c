@@ -1,7 +1,9 @@
 /*
+ * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
+ *
+ * Based on "procd" by:
  * Copyright (C) 2013 Felix Fietkau <nbd@openwrt.org>
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
- * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -22,7 +24,7 @@
 #include <getopt.h>
 #include <libgen.h>
 
-#include "procd.h"
+#include "unitd.h"
 #include "watchdog.h"
 
 unsigned int debug = 4;
@@ -45,7 +47,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	ulog_open(ULOG_KMSG, LOG_DAEMON, "procd");
+	ulog_open(ULOG_KMSG, LOG_DAEMON, "unitd");
 
 	while ((ch = getopt(argc, argv, "d:s:")) != -1) {
 		switch (ch) {
@@ -61,8 +63,8 @@ int main(int argc, char **argv)
 	}
 	setsid();
 	uloop_init();
-	procd_signal();
-	procd_state_next();
+	unitd_signal();
+	unitd_state_next();
 	uloop_run();
 	uloop_done();
 

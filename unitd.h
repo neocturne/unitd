@@ -1,7 +1,9 @@
 /*
+ * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
+ *
+ * Based on "procd" by:
  * Copyright (C) 2013 Felix Fietkau <nbd@openwrt.org>
  * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
- * Copyright (C) 2015 Matthias Schiffer <mschiffer@universe-factory.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -13,8 +15,7 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __PROCD_H
-#define __PROCD_H
+#pragma once
 
 #include <libubox/uloop.h>
 #include <libubox/utils.h>
@@ -30,22 +31,20 @@
 extern char *ubus_socket;
 extern int upgrade_running;
 
-void procd_early(void);
+void unitd_early(void);
 
-void procd_connect_ubus(void);
-void procd_reconnect_ubus(int reconnect);
+void unitd_connect_ubus(void);
+void unitd_reconnect_ubus(int reconnect);
 void ubus_init_service(struct ubus_context *ctx);
 void ubus_init_system(struct ubus_context *ctx);
 
-void procd_state_next(void);
-void procd_state_ubus_connect(void);
-void procd_shutdown(int event);
-void procd_early(void);
-void procd_preinit(void);
-void procd_coldplug(void);
-void procd_signal(void);
-void procd_signal_preinit(void);
-void procd_askconsole(void);
-void procd_bcast_event(char *event, struct blob_attr *msg);
-
-#endif
+void unitd_state_next(void);
+void unitd_state_ubus_connect(void);
+void unitd_shutdown(int event);
+void unitd_early(void);
+void unitd_preinit(void);
+void unitd_coldplug(void);
+void unitd_signal(void);
+void unitd_signal_preinit(void);
+void unitd_askconsole(void);
+void unitd_bcast_event(char *event, struct blob_attr *msg);
