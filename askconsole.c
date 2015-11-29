@@ -57,7 +57,7 @@ static void child_exit(struct uloop_process *proc, int ret)
 }
 
 void unitd_askconsole(void) {
-	struct uloop_process *proc = malloc(sizeof(*proc));
+	struct uloop_process *proc = calloc(1, sizeof(*proc));
 	proc->cb = child_exit;
 	askconsole(proc);
 }
