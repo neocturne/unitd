@@ -21,27 +21,15 @@
 #include <sys/prctl.h>
 
 #include <errno.h>
-#include <getopt.h>
-#include <string.h>
 #include <unistd.h>
 
 
 unsigned int debug = 4;
 
-static int usage(const char *prog)
-{
-	ERROR("Usage: %s [options]\n"
-		"Options:\n"
-		"\t-s <path>\tPath to ubus socket\n"
-		"\t-d <level>\tEnable debug messages\n"
-		"\n", prog);
-	return 1;
-}
 
-int main(int argc, char **argv)
+int main()
 {
 	static char unitd[] = "unitd";
-	int ch;
 
 	if (getpid() != 1) {
 		fprintf(stderr, "error: must run as PID 1\n");
@@ -53,18 +41,6 @@ int main(int argc, char **argv)
 
 	ulog_open(ULOG_KMSG, LOG_DAEMON, "unitd");
 
-	while ((ch = getopt(argc, argv, "d:s:")) != -1) {
-		switch (ch) {
-		case 's':
-			ubus_socket = optarg;
-			break;
-		case 'd':
-			debug = atoi(optarg);
-			break;
-		default:
-			return usage(argv[0]);
-		}
-	}
 	setsid();
 	uloop_init();
 	unitd_signal();
