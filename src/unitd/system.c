@@ -15,6 +15,9 @@
  * GNU General Public License for more details.
  */
 
+#include "unitd.h"
+#include "watchdog.h"
+
 #include <sys/utsname.h>
 #include <sys/sysinfo.h>
 #include <sys/ioctl.h>
@@ -27,8 +30,6 @@
 
 #include <libubox/uloop.h>
 
-#include "unitd.h"
-#include "watchdog.h"
 
 static struct blob_buf b;
 static int notify;

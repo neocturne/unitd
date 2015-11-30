@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "log.h"
+
 #include <libubox/uloop.h>
 #include <libubox/utils.h>
 #include <libubus.h>
@@ -24,9 +26,6 @@
 #include <stdio.h>
 #include <syslog.h>
 
-#include "log.h"
-
-#define __init __attribute__((constructor))
 
 extern char *ubus_socket;
 

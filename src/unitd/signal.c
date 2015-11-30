@@ -15,12 +15,13 @@
  * GNU General Public License for more details.
  */
 
+#include "unitd.h"
+
 #include <sys/reboot.h>
 #include <sys/types.h>
 
 #include <unistd.h>
 
-#include "unitd.h"
 
 static void do_reboot(void)
 {

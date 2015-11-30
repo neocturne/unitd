@@ -15,6 +15,12 @@
  * GNU General Public License for more details.
  */
 
+#include "unitd.h"
+#include "syslog.h"
+#include "utils.h"
+#include "watchdog.h"
+#include "service/service.h"
+
 #include <fcntl.h>
 #include <sys/reboot.h>
 #include <stdio.h>
@@ -23,11 +29,6 @@
 #include <sys/types.h>
 #include <signal.h>
 
-#include "unitd.h"
-#include "syslog.h"
-#include "watchdog.h"
-#include "service/service.h"
-#include "utils/utils.h"
 
 enum {
 	STATE_NONE = 0,

@@ -15,9 +15,11 @@
  * GNU General Public License for more details.
  */
 
+#include "utils.h"
+
 #include <libubox/avl.h>
 #include <libubox/avl-cmp.h>
-#include "utils.h"
+
 #include <asm-generic/setup.h>
 #include <regex.h>
 #include <unistd.h>

@@ -17,10 +17,11 @@
 
 #pragma once
 
+#include "../utils.h"
+
 #include <libubox/vlist.h>
 #include <libubox/uloop.h>
 #include <libubox/ustream.h>
-#include "../utils/utils.h"
 
 #define RESPAWN_ERROR	(5 * 60)
 

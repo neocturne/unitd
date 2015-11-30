@@ -15,6 +15,8 @@
  * GNU General Public License for more details.
  */
 
+#include "unitd.h"
+
 #include <sys/mount.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -24,7 +26,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "unitd.h"
 
 static void
 early_console(const char *dev)

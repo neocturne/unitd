@@ -15,12 +15,13 @@
  * GNU General Public License for more details.
  */
 
+#include "unitd.h"
+
 #include <sys/resource.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
 
-#include "unitd.h"
 
 char *ubus_socket = NULL;
 static struct ubus_context *ctx;

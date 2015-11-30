@@ -21,7 +21,7 @@
 
 static void askconsole(struct uloop_process *proc) {
 	char *const ask[] = {
-		"/sbin/askfirst",
+		"/lib/unitd/askfirst",
 		"/bin/ash",
 		"--login",
 		NULL,

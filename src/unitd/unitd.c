@@ -15,6 +15,9 @@
  * GNU General Public License for more details.
  */
 
+#include "unitd.h"
+#include "watchdog.h"
+
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -24,8 +27,6 @@
 #include <getopt.h>
 #include <libgen.h>
 
-#include "unitd.h"
-#include "watchdog.h"
 
 unsigned int debug = 4;
 
