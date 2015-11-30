@@ -16,16 +16,14 @@
  */
 
 #include "unitd.h"
-#include "watchdog.h"
 
-#include <sys/wait.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/reboot.h>
+#include <sys/prctl.h>
 
-#include <unistd.h>
+#include <errno.h>
 #include <getopt.h>
-#include <libgen.h>
+#include <string.h>
+#include <unistd.h>
 
 
 unsigned int debug = 4;
@@ -42,11 +40,16 @@ static int usage(const char *prog)
 
 int main(int argc, char **argv)
 {
+	static char unitd[] = "unitd";
 	int ch;
+
 	if (getpid() != 1) {
 		fprintf(stderr, "error: must run as PID 1\n");
 		return 1;
 	}
+
+	program_invocation_short_name = unitd;
+	prctl(PR_SET_NAME, unitd);
 
 	ulog_open(ULOG_KMSG, LOG_DAEMON, "unitd");
 

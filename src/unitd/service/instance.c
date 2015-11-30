@@ -15,7 +15,6 @@
  * GNU General Public License for more details.
  */
 
-#define _GNU_SOURCE
 #include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/socket.h>
