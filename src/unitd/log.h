@@ -15,8 +15,7 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __LOG_H
-#define __LOG_H
+#pragma once
 
 #include <libubox/ulog.h>
 
@@ -29,5 +28,3 @@
 #define ERROR ULOG_ERR
 
 extern unsigned int debug;
-
-#endif
