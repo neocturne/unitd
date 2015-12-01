@@ -23,14 +23,13 @@
 #include <signal.h>
 
 
-char *ubus_socket = NULL;
 static struct ubus_context *ctx;
 static struct uloop_timeout ubus_timer;
 
 static void
 ubus_reconnect_cb(struct uloop_timeout *timeout)
 {
-	if (!ubus_reconnect(ctx, ubus_socket))
+	if (!ubus_reconnect(ctx, NULL))
 		ubus_add_uloop(ctx);
 	else
 		uloop_timeout_set(timeout, 2000);
@@ -46,7 +45,7 @@ ubus_disconnect_cb(struct ubus_context *ctx)
 static void
 ubus_connect_cb(struct uloop_timeout *timeout)
 {
-	ctx = ubus_connect(ubus_socket);
+	ctx = ubus_connect(NULL);
 
 	if (!ctx) {
 		DEBUG(4, "Connection to ubus failed\n");

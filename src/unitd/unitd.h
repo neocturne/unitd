@@ -27,8 +27,6 @@
 #include <syslog.h>
 
 
-extern char *ubus_socket;
-
 void unitd_early(void);
 
 void unitd_connect_ubus(void);
