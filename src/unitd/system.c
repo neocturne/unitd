@@ -213,35 +213,6 @@ static int watchdog_set(struct ubus_context *ctx, struct ubus_object *obj,
 	return 0;
 }
 
-enum {
-	SIGNAL_PID,
-	SIGNAL_NUM,
-	__SIGNAL_MAX
-};
-
-static const struct blobmsg_policy signal_policy[__SIGNAL_MAX] = {
-	[SIGNAL_PID] = { .name = "pid", .type = BLOBMSG_TYPE_INT32 },
-	[SIGNAL_NUM] = { .name = "signum", .type = BLOBMSG_TYPE_INT32 },
-};
-
-static int proc_signal(struct ubus_context *ctx, struct ubus_object *obj,
-			struct ubus_request_data *req, const char *method,
-			struct blob_attr *msg)
-{
-	struct blob_attr *tb[__SIGNAL_MAX];
-
-	if (!msg)
-		return UBUS_STATUS_INVALID_ARGUMENT;
-
-	blobmsg_parse(signal_policy, __SIGNAL_MAX, tb, blob_data(msg), blob_len(msg));
-	if (!tb[SIGNAL_PID || !tb[SIGNAL_NUM]])
-		return UBUS_STATUS_INVALID_ARGUMENT;
-
-	kill(blobmsg_get_u32(tb[SIGNAL_PID]), blobmsg_get_u32(tb[SIGNAL_NUM]));
-
-	return 0;
-}
-
 static void
 unitd_subscribe_cb(struct ubus_context *ctx, struct ubus_object *obj)
 {
@@ -253,7 +224,6 @@ static const struct ubus_method system_methods[] = {
 	UBUS_METHOD_NOARG("board", system_board),
 	UBUS_METHOD_NOARG("info",  system_info),
 	UBUS_METHOD("watchdog", watchdog_set, watchdog_policy),
-	UBUS_METHOD("signal", proc_signal, signal_policy),
 };
 
 static struct ubus_object_type system_object_type =
