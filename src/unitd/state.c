@@ -18,7 +18,6 @@
 #include "unitd.h"
 #include "syslog.h"
 #include "utils.h"
-#include "watchdog.h"
 #include "service/service.h"
 
 #include <fcntl.h>
@@ -99,7 +98,6 @@ static void state_enter(void)
 
 	switch (state) {
 	case STATE_EARLY:
-		watchdog_init(0);
 		LOG("- early -\n");
 		unitd_early();
 		unitd_connect_ubus();

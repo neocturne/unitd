@@ -16,7 +16,6 @@
  */
 
 #include "unitd.h"
-#include "watchdog.h"
 
 #include <sys/utsname.h>
 #include <sys/sysinfo.h>
@@ -150,69 +149,6 @@ static int system_info(struct ubus_context *ctx, struct ubus_object *obj,
 	return UBUS_STATUS_OK;
 }
 
-enum {
-	WDT_FREQUENCY,
-	WDT_TIMEOUT,
-	WDT_STOP,
-	__WDT_MAX
-};
-
-static const struct blobmsg_policy watchdog_policy[__WDT_MAX] = {
-	[WDT_FREQUENCY] = { .name = "frequency", .type = BLOBMSG_TYPE_INT32 },
-	[WDT_TIMEOUT] = { .name = "timeout", .type = BLOBMSG_TYPE_INT32 },
-	[WDT_STOP] = { .name = "stop", .type = BLOBMSG_TYPE_BOOL },
-};
-
-static int watchdog_set(struct ubus_context *ctx, struct ubus_object *obj,
-			struct ubus_request_data *req, const char *method,
-			struct blob_attr *msg)
-{
-	struct blob_attr *tb[__WDT_MAX];
-	const char *status;
-
-	if (!msg)
-		return UBUS_STATUS_INVALID_ARGUMENT;
-
-	blobmsg_parse(watchdog_policy, __WDT_MAX, tb, blob_data(msg), blob_len(msg));
-	if (tb[WDT_FREQUENCY]) {
-		unsigned int timeout = watchdog_timeout(0);
-		unsigned int freq = blobmsg_get_u32(tb[WDT_FREQUENCY]);
-
-		if (freq) {
-			if (freq > timeout / 2)
-				freq = timeout / 2;
-			watchdog_frequency(freq);
-		}
-	}
-
-	if (tb[WDT_TIMEOUT]) {
-		unsigned int timeout = blobmsg_get_u32(tb[WDT_TIMEOUT]);
-		unsigned int frequency = watchdog_frequency(0);
-
-		if (timeout <= frequency)
-			timeout = frequency * 2;
-		 watchdog_timeout(timeout);
-	}
-
-	if (tb[WDT_STOP])
-		watchdog_set_stopped(blobmsg_get_bool(tb[WDT_STOP]));
-
-	if (watchdog_fd() == NULL)
-		status = "offline";
-	else if (watchdog_get_stopped())
-		status = "stopped";
-	else
-		status = "running";
-
-	blob_buf_init(&b, 0);
-	blobmsg_add_string(&b, "status", status);
-	blobmsg_add_u32(&b, "timeout", watchdog_timeout(0));
-	blobmsg_add_u32(&b, "frequency", watchdog_frequency(0));
-	ubus_send_reply(ctx, req, b.head);
-
-	return 0;
-}
-
 static void
 unitd_subscribe_cb(struct ubus_context *ctx, struct ubus_object *obj)
 {
@@ -223,7 +159,6 @@ unitd_subscribe_cb(struct ubus_context *ctx, struct ubus_object *obj)
 static const struct ubus_method system_methods[] = {
 	UBUS_METHOD_NOARG("board", system_board),
 	UBUS_METHOD_NOARG("info",  system_info),
-	UBUS_METHOD("watchdog", watchdog_set, watchdog_policy),
 };
 
 static struct ubus_object_type system_object_type =
