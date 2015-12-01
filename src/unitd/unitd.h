@@ -27,6 +27,9 @@
 #include <syslog.h>
 
 
+#define UNUSED __attribute__((unused))
+
+
 void unitd_early(void);
 
 void unitd_connect_ubus(void);

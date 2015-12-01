@@ -36,14 +36,14 @@ ubus_reconnect_cb(struct uloop_timeout *timeout)
 }
 
 static void
-ubus_disconnect_cb(struct ubus_context *ctx)
+ubus_disconnect_cb(UNUSED struct ubus_context *ctx)
 {
 	ubus_timer.cb = ubus_reconnect_cb;
 	uloop_timeout_set(&ubus_timer, 2000);
 }
 
 static void
-ubus_connect_cb(struct uloop_timeout *timeout)
+ubus_connect_cb(UNUSED struct uloop_timeout *timeout)
 {
 	ctx = ubus_connect(NULL);
 

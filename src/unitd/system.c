@@ -34,9 +34,9 @@ static struct blob_buf b;
 static int notify;
 static struct ubus_context *_ctx;
 
-static int system_board(struct ubus_context *ctx, struct ubus_object *obj,
-                 struct ubus_request_data *req, const char *method,
-                 struct blob_attr *msg)
+static int system_board(struct ubus_context *ctx, UNUSED struct ubus_object *obj,
+			struct ubus_request_data *req, UNUSED const char *method,
+			UNUSED struct blob_attr *msg)
 {
 	char line[256];
 	char *key, *val;
@@ -104,9 +104,9 @@ static int system_board(struct ubus_context *ctx, struct ubus_object *obj,
 	return UBUS_STATUS_OK;
 }
 
-static int system_info(struct ubus_context *ctx, struct ubus_object *obj,
-                struct ubus_request_data *req, const char *method,
-                struct blob_attr *msg)
+static int system_info(struct ubus_context *ctx, UNUSED struct ubus_object *obj,
+		       struct ubus_request_data *req, UNUSED const char *method,
+		       UNUSED struct blob_attr *msg)
 {
 	void *c;
 	time_t now;
@@ -150,7 +150,7 @@ static int system_info(struct ubus_context *ctx, struct ubus_object *obj,
 }
 
 static void
-unitd_subscribe_cb(struct ubus_context *ctx, struct ubus_object *obj)
+unitd_subscribe_cb(UNUSED struct ubus_context *ctx, struct ubus_object *obj)
 {
 	notify = obj->has_subscribers;
 }

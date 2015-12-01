@@ -34,7 +34,7 @@ static void do_reboot(void)
 	;
 }
 
-static void signal_shutdown(int signal, siginfo_t *siginfo, void *data)
+static void signal_shutdown(int signal, UNUSED siginfo_t *siginfo, UNUSED void *data)
 {
 	int event = 0;
 	char *msg = NULL;
@@ -62,7 +62,7 @@ struct sigaction sa_shutdown = {
 	.sa_flags = SA_SIGINFO
 };
 
-static void signal_crash(int signal, siginfo_t *siginfo, void *data)
+static void signal_crash(UNUSED int signal, UNUSED siginfo_t *siginfo, UNUSED void *data)
 {
 	ERROR("Rebooting as unitd has crashed\n");
 	do_reboot();
@@ -73,7 +73,7 @@ struct sigaction sa_crash = {
 	.sa_flags = SA_SIGINFO
 };
 
-static void signal_dummy(int signal, siginfo_t *siginfo, void *data)
+static void signal_dummy(int signal, UNUSED siginfo_t *siginfo, UNUSED void *data)
 {
 	ERROR("Got unexpected signal %d\n", signal);
 }

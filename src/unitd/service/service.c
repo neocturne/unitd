@@ -44,7 +44,7 @@ service_instance_add(struct service *s, struct blob_attr *attr)
 }
 
 static void
-service_instance_update(struct vlist_tree *tree, struct vlist_node *node_new,
+service_instance_update(UNUSED struct vlist_tree *tree, struct vlist_node *node_new,
 			struct vlist_node *node_old)
 {
 	struct service_instance *in_o = NULL, *in_n = NULL;
@@ -184,8 +184,8 @@ static const struct blobmsg_policy get_data_policy[] = {
 };
 
 static int
-service_handle_set(struct ubus_context *ctx, struct ubus_object *obj,
-		   struct ubus_request_data *req, const char *method,
+service_handle_set(UNUSED struct ubus_context *ctx, UNUSED struct ubus_object *obj,
+		   UNUSED struct ubus_request_data *req, const char *method,
 		   struct blob_attr *msg)
 {
 	struct blob_attr *tb[__SERVICE_SET_MAX], *cur;
@@ -241,8 +241,8 @@ service_dump(struct service *s, bool verbose)
 }
 
 static int
-service_handle_list(struct ubus_context *ctx, struct ubus_object *obj,
-		    struct ubus_request_data *req, const char *method,
+service_handle_list(struct ubus_context *ctx, UNUSED struct ubus_object *obj,
+		    struct ubus_request_data *req, UNUSED const char *method,
 		    struct blob_attr *msg)
 {
 	struct blob_attr *tb[__SERVICE_LIST_ATTR_MAX];
@@ -271,9 +271,9 @@ service_handle_list(struct ubus_context *ctx, struct ubus_object *obj,
 }
 
 static int
-service_handle_delete(struct ubus_context *ctx, struct ubus_object *obj,
-		    struct ubus_request_data *req, const char *method,
-		    struct blob_attr *msg)
+service_handle_delete(UNUSED struct ubus_context *ctx, UNUSED struct ubus_object *obj,
+		      UNUSED struct ubus_request_data *req, UNUSED const char *method,
+		      struct blob_attr *msg)
 {
 	struct blob_attr *tb[__SERVICE_DEL_ATTR_MAX], *cur;
 	struct service *s;
@@ -307,8 +307,8 @@ service_handle_delete(struct ubus_context *ctx, struct ubus_object *obj,
 }
 
 static int
-service_handle_update(struct ubus_context *ctx, struct ubus_object *obj,
-		      struct ubus_request_data *req, const char *method,
+service_handle_update(UNUSED struct ubus_context *ctx, UNUSED struct ubus_object *obj,
+		      UNUSED struct ubus_request_data *req, const char *method,
 		      struct blob_attr *msg)
 {
 	struct blob_attr *tb[__SERVICE_ATTR_MAX], *cur;
@@ -333,8 +333,8 @@ service_handle_update(struct ubus_context *ctx, struct ubus_object *obj,
 }
 
 static int
-service_get_data(struct ubus_context *ctx, struct ubus_object *obj,
-		 struct ubus_request_data *req, const char *method,
+service_get_data(struct ubus_context *ctx, UNUSED struct ubus_object *obj,
+		 struct ubus_request_data *req, UNUSED const char *method,
 		 struct blob_attr *msg)
 {
 	struct service_instance *in;

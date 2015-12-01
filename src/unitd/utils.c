@@ -103,14 +103,14 @@ blobmsg_list_equal(struct blobmsg_list *l1, struct blobmsg_list *l2)
 	struct blobmsg_list_node *n1, *n2;
 	int count = l1->avl.count;
 
-	if (count != l2->avl.count)
+	if (count != (int)l2->avl.count)
 		return false;
 
 	n1 = avl_first_element(&l1->avl, n1, avl);
 	n2 = avl_first_element(&l2->avl, n2, avl);
 
 	while (count-- > 0) {
-		int len;
+		unsigned int len;
 
 		len = blob_len(n1->data);
 		if (len != blob_len(n2->data))

@@ -50,7 +50,7 @@ static void askconsole(struct uloop_process *proc) {
 	}
 }
 
-static void child_exit(struct uloop_process *proc, int ret)
+static void child_exit(struct uloop_process *proc, UNUSED int ret)
 {
 	DEBUG(4, "pid:%d\n", proc->pid);
 	askconsole(proc);
