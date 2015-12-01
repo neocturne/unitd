@@ -1,5 +1,15 @@
-add_executable(unitd unitd.c signal.c state.c askconsole.c ubus.c system.c early.c
-  service/service.c service/instance.c utils.c)
+add_executable(unitd
+  askconsole.c
+  early.c
+  service/instance.c
+  service/service.c
+  signal.c
+  state.c
+  system.c
+  ubus.c
+  unitd.c
+  utils.c
+)
 set_property(TARGET unitd PROPERTY COMPILE_FLAGS "-std=gnu99 -Wall -D_GNU_SOURCE ${JSON_C_CFLAGS_OTHER}")
 set_property(TARGET unitd PROPERTY LINK_FLAGS "${JSON_C_LDFLAGS_OTHER}")
 set_property(TARGET unitd PROPERTY INCLUDE_DIRECTORIES ${JSON_C_INCLUDE_DIR})
