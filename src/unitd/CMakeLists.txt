@@ -7,6 +7,9 @@ add_executable(unitd
   state.c
   system.c
   ubus.c
+  unit/queue.c
+  unit/service.c
+  unit/unit.c
   unitd.c
   utils.c
 )

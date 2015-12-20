@@ -19,12 +19,21 @@
 
 #include <libubox/ulog.h>
 
+#include <stdlib.h>
+
+
 #define DEBUG(level, fmt, ...) do { \
 	if (debug >= level) { \
 		ulog(LOG_DEBUG, fmt, ## __VA_ARGS__); \
 	} } while (0)
 
 #define LOG   ULOG_INFO
+#define WARN  ULOG_WARN
 #define ERROR ULOG_ERR
+
+#define BUG(fmt, ...) do { \
+		ERROR(fmt, ## __VA_ARGS__); \
+		abort(); \
+	} while (0)
 
 extern unsigned int debug;

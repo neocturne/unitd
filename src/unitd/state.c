@@ -48,8 +48,6 @@ static void set_stdio(const char* tty)
 	    !freopen(tty, "w", stderr) ||
 	    chdir("/"))
 		ERROR("failed to set stdio\n");
-	else
-		fcntl(STDERR_FILENO, F_SETFL, fcntl(STDERR_FILENO, F_GETFL) | O_NONBLOCK);
 }
 
 static void set_console(void)
