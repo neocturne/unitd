@@ -16,6 +16,7 @@
  */
 
 #include <sys/types.h>
+#include <sys/ioctl.h>
 #include <sys/stat.h>
 
 #include <stdio.h>
@@ -26,13 +27,15 @@ int main(int argc, char **argv)
 {
 	int c;
 
+	ioctl(STDIN_FILENO, TIOCSCTTY, 1);
+	tcsetpgrp(STDIN_FILENO, getpid());
+
 	printf("Please press Enter to activate this console.\n");
 	do {
 		c = getchar();
 		if (c == EOF)
 			return -1;
-	}
-	while (c != 0xA);
+	} while (c != 0x0a);
 
 	if (argc < 2) {
 		printf("%s needs to be called with at least 1 parameter\n", argv[0]);

@@ -12,53 +12,49 @@
  */
 
 #include "unitd.h"
+#include "unit/unit.h"
 
 #include <sys/types.h>
-#include <sys/ioctl.h>
 
 #include <fcntl.h>
 #include <unistd.h>
 
 
-static void askconsole(struct uloop_process *proc) {
-	char *const ask[] = {
+static unitd_service_t service_askconsole = {
+	.unit = {
+		.type = UNIT_TYPE_SERVICE,
+		.loaded = LOAD_STATE_LOADED,
+		.name = "askconsole.service",
+
+		.state = UNIT_STATE_INACTIVE,
+	},
+
+	.type = SERVICE_TYPE_SIMPLE,
+	.ExecStart = (char *[]){
 		"/lib/unitd/askfirst",
 		"/bin/ash",
 		"--login",
 		NULL,
-	};
+	},
 
-	pid_t p;
+	.proc = {},
+};
 
-	proc->pid = fork();
-	if (!proc->pid) {
-		p = setsid();
 
-		fcntl(STDERR_FILENO, F_SETFL, fcntl(STDERR_FILENO, F_GETFL) & ~O_NONBLOCK);
-
-		ioctl(STDIN_FILENO, TIOCSCTTY, 1);
-		tcsetpgrp(STDIN_FILENO, p);
-
-		execvp(ask[0], ask);
-		ERROR("Failed to execute %s\n", ask[0]);
-		exit(-1);
-	}
-
-	if (proc->pid > 0) {
-		DEBUG(4, "Launched askconsole, pid=%d\n",
-					(int) proc->pid);
-		uloop_process_add(proc);
-	}
+static void init_unit(unitd_unit_t *unit) {
+	INIT_LIST_HEAD(&unit->requires);
+	INIT_LIST_HEAD(&unit->required_by);
+	INIT_LIST_HEAD(&unit->wants);
+	INIT_LIST_HEAD(&unit->wanted_by);
+	INIT_LIST_HEAD(&unit->conflicts);
+	INIT_LIST_HEAD(&unit->conflicted_by);
+	INIT_LIST_HEAD(&unit->after);
+	INIT_LIST_HEAD(&unit->before);
 }
 
-static void child_exit(struct uloop_process *proc, UNUSED int ret)
-{
-	DEBUG(4, "pid:%d\n", proc->pid);
-	askconsole(proc);
-}
 
 void unitd_askconsole(void) {
-	struct uloop_process *proc = calloc(1, sizeof(*proc));
-	proc->cb = child_exit;
-	askconsole(proc);
+	init_unit(&service_askconsole.unit);
+
+	unitd_unit_activate(&service_askconsole.unit);
 }
